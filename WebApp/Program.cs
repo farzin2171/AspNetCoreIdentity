@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
+using WebApp.Authorization;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,11 +16,28 @@ builder.Services.AddRazorPages();
 /// Note : you can have multiple authentication scheemes but only one scheme can be used by middlewar
 /// AddAuthentication("MyCookieAuth")
 /// 
-builder.Services.AddAuthentication("MyCookieAuth").AddCookie("MyCookieAuth" , options =>
+builder.Services.AddAuthentication("MyCookieAuth").AddCookie("MyCookieAuth", options =>
 {
-    options.Cookie.Name = "MyCookieAuth";
+   options.Cookie.Name = "MyCookieAuth";
+   options.LoginPath = "/Account/Login";
 
 });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireClaim("Admin"));
+
+    options.AddPolicy("MustBelongToHR", policy =>
+    policy.RequireClaim("Department", "HR"));
+
+    options.AddPolicy("HRManagerOnly", policy =>
+    policy
+   .RequireClaim("Department", "HR")
+   .RequireClaim("Manager")
+   .Requirements.Add(new HRManagerRequirment(30)));
+});
+
+builder.Services.AddSingleton<IAuthorizationHandler, HRManagerRequirmentHandler>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

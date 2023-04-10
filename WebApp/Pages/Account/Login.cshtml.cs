@@ -31,7 +31,12 @@ namespace WebApp.Pages.Account
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name , "admin"),
-                    new Claim(ClaimTypes.Email , "admin@gmail.com")
+                    new Claim(ClaimTypes.Email , "admin@gmail.com"),
+                    new Claim("Department" , "HR"),
+                    new Claim("Admin","true"),
+                    new Claim("EmploymentDate","2021-05-01"),
+                    new Claim("Manager","True")
+
 
                 };
                 var identity = new ClaimsIdentity(claims , "MyCookieAuth");
